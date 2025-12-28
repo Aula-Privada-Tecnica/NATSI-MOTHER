@@ -251,6 +251,57 @@
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         
         #hidden-natsi-form { display: none; }
+
+        /* ESTILOS DEL CRONÓMETRO NATSI */
+.countdown-wrapper {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid rgba(157, 80, 187, 0.3);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.launch-label {
+    font-size: 0.7rem;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.natsi-clock {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-family: 'Courier New', monospace;
+}
+
+.time-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.time-box span {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px var(--purple);
+}
+
+.time-box small {
+    font-size: 0.6rem;
+    color: var(--cyan);
+    margin-top: -5px;
+}
+
+.launch-date-footer {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--purple);
+    opacity: 0.7;
+}
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -286,7 +337,7 @@
     <div class="announcement-card reveal">
         <h2>COMUNICADO OFICIAL<br><br>APT ➔ NATSI</h2>
         <div class="message-body">
-            <p>Saludos a los usuarios de <span class="highlight">"APT"</span>. Nos complace anunciar el cambio oficial a <span class="highlight">"NATSI"</span>, donde el aprendizaje técnico será gratuito y de libre acceso para nuestra comunidad.</p>
+            <p>Saludos a nuestros estudiantes de <span class="highlight">"APT"</span>. Yo el <span class="highlight">Director y Fundador</span> me complace anunciar el cambio oficial a <span class="highlight">"NATSI"</span>, donde el aprendizaje técnico será gratuito y de libre acceso para nuestra <strong>Academia</strong>.</p>
             
             <div class="nucleos-grid">
                 <div class="nucleo-card reveal">
@@ -321,7 +372,7 @@
                     <ul class="course-list">
                         <li>Inglés Técnico</li>
                         <li>Ruso Contemporáneo</li>
-                        <li>Poqomam Ancestral</li>
+                        <li>Poqomam</li>
                     </ul>
                 </div>
             </div>
@@ -329,15 +380,26 @@
             <div class="confirmation-box reveal">
                 <input type="checkbox" id="confirmCheck">
                 <label for="confirmCheck" style="font-size:0.8rem; color:#fff; cursor:pointer;">
-                    <strong>CONFIRMACIÓN:</strong> Certifico mi interés en NATSI. Entiendo que al marcar, seré redirigido al sistema de <strong>SUBREGISTRO</strong>.
+                    <strong>Confirmar:</strong> confirmo mi interés en NATSI. Entiendo que al marcar, seré redirigido al sistema de <strong>SUBREGISTRO</strong>.
                 </label>
             </div>
 
+
             <div class="signature reveal">
-                <strong>TÉCNICO: ÁNGEL MANUEL GUEVARA CHAVARRÍA</strong><br>
-                Director de Núcleos Académicos
-                <span class="launch-date">LANZAMIENTO: 01 / 10 / 2026</span>
-            </div>
+    <strong>TÉCNICO: Angel Manuel Guevara Chavarría</strong><br>
+    Director de Núcleos Académicos
+    
+    <div class="countdown-wrapper">
+        <span class="launch-label">Tiempo para el lanzamiento:</span>
+        <div id="natsi-clock" class="natsi-clock">
+            <div class="time-box"><span id="days">00</span><small>DÍAS</small></div>
+            <div class="time-box"><span id="hours">00</span><small>HRS</small></div>
+            <div class="time-box"><span id="minutes">00</span><small>MIN</small></div>
+            <div class="time-box"><span id="seconds">00</span><small>SEG</small></div>
+        </div>
+        <span class="launch-date-footer">01 / 10 / 2026</span>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -424,6 +486,35 @@
             document.querySelectorAll(".reveal").forEach(el => el.classList.add("active"));
         }, 500);
     };
+
+    function startCountdown() {
+    // Fecha objetivo: 1 de Octubre de 2026 (Mes 9 en JS)
+    const target = new Date(2026, 9, 1, 0, 0, 0).getTime();
+
+    const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff <= 0) {
+            clearInterval(timer);
+            document.getElementById('natsi-clock').innerHTML = "<span style='color:var(--cyan)'>SISTEMA INICIADO</span>";
+            return;
+        }
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = d.toString().padStart(2, '0');
+        document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+        document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+        document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+    }, 1000);
+}
+
+// Iniciar el reloj
+startCountdown();
 </script>
 </body>
 </html>
