@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NATSI - Comunicado Oficial</title>
+    <style>
+        :root {
+            --cyan: #00f2fe;
+            --purple: #9d50bb;
+            --bg: #0d0d0d;
+            --text: #e0e0e0;
+            --card-bg: rgba(15, 15, 15, 0.95);
+        }
+
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 100%);
+        }
+
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 0;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 95%;
+            max-width: 850px;
+        }
+
+        .logo-container {
+            width: 140px;
+            height: 140px;
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+            transition: filter 0.3s ease;
+            animation: floatSpace 4s ease-in-out infinite;
+        }
+
+        @keyframes floatSpace {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+
+        @media (min-width: 768px) { .logo-container { width: 170px; height: 170px; } }
+
+        svg { width: 100%; height: 100%; overflow: visible; }
+        .cinta {
+            fill: none; stroke-width: 10; stroke-linejoin: round; stroke-linecap: round;
+            stroke-dasharray: 400; animation: flujoInfinito 0s linear infinite;
+        }
+        @keyframes flujoInfinito { from { stroke-dashoffset: 800; } to { stroke-dashoffset: 0; } }
+        .color-cyan { stroke: url(#gradCyan); }
+        .color-purple { stroke: url(#gradPurple); }
+        .shadow { stroke: rgba(0,0,0,0.6); stroke-width: 16; filter: blur(4px); }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: transform, opacity;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .announcement-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            position: relative;
+            backdrop-filter: blur(15px);
+            width: 100%;
+        }
+
+        .announcement-card::before {
+            content: "NATSI BROADCAST SYSTEM v2.0";
+            position: absolute; top: -12px; left: 20px;
+            background: var(--cyan); color: #000;
+            font-size: 0.65rem; font-weight: bold; padding: 2px 10px; border-radius: 4px;
+        }
+
+        h2 {
+            color: var(--cyan); text-transform: uppercase; text-align: center;
+            letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 20px;
+        }
+
+        .message-body { line-height: 1.6; font-size: 0.9rem; color: #bbb; text-align: justify; }
+        .highlight { color: var(--cyan); font-weight: bold; }
+
+        .nucleos-grid {
+            display: grid; grid-template-columns: 1fr; gap: 15px; margin: 25px 0;
+        }
+        @media (min-width: 650px) { .nucleos-grid { grid-template-columns: 1fr 1fr; } }
+
+        .nucleo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(157, 80, 187, 0.2);
+            border-radius: 8px; padding: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nucleo-card:hover {
+            background: rgba(157, 80, 187, 0.1);
+            border-color: var(--cyan);
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.1);
+            cursor: pointer;
+        }
+
+        .nucleo-card::after {
+            content: "";
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0,242,254,0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .nucleo-card:hover::after { opacity: 1; }
+
+        .nucleo-header {
+            color: var(--cyan); font-weight: bold; font-size: 0.85rem; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 8px;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.1); padding-bottom: 5px;
+            transition: color 0.3s;
+        }
+        .nucleo-card:hover .nucleo-header { color: #fff; }
+
+        .course-list { margin: 0; padding-left: 15px; list-style: none; }
+        .course-list li { font-size: 0.8rem; color: #eee; margin-bottom: 4px; position: relative; }
+        .course-list li::before { content: ">"; position: absolute; left: -15px; color: var(--purple); font-weight: bold; }
+
+        .confirmation-box {
+            background: rgba(157, 80, 187, 0.08); border: 1px solid var(--purple);
+            padding: 15px; border-radius: 8px; display: flex; align-items: flex-start; gap: 12px;
+            margin-top: 20px;
+        }
+
+        .confirmation-box input[type="checkbox"] {
+            min-width: 22px; min-height: 22px; accent-color: var(--cyan); cursor: pointer;
+        }
+        .confirmation-text { font-size: 0.8rem; color: #fff; line-height: 1.4; }
+
+        .signature {
+            margin-top: 25px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1);
+            font-family: 'Courier New', monospace; font-size: 0.8rem;
+        }
+        .launch-date { display: block; margin-top: 10px; font-weight: bold; color: var(--purple); text-align: center; font-size: 1.1rem; }
+
+        footer {
+            margin-top: 60px; padding: 40px 20px; width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: center;
+        }
+
+        .typewriter-text { font-family: 'Courier New', monospace; color: var(--cyan); font-size: 0.85rem; font-weight: bold; }
+        .cursor { display: inline-block; width: 8px; background-color: var(--cyan); animation: blink 0.7s infinite; margin-left: 5px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        #hidden-natsi-form { display: none; }
+
+        /* --- LANZADOR COHETE (AJUSTADO A LA IZQUIERDA) --- */
+        .rocket-launcher {
+            position: fixed;
+            bottom: 30px;
+            left: 30px; /* Movido a la izquierda */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0; /* Controlado por JS */
+            pointer-events: none;
+        }
+
+        .rocket-label {
+            background: rgba(157, 80, 187, 0.9);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.3s;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            margin-bottom: 8px;
+        }
+
+        .rocket-launcher:hover .rocket-label {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .rocket-icon {
+            font-size: 2.5rem;
+            background: rgba(15, 15, 15, 0.8);
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
+        }
+
+        .rocket-text {
+            color: var(--cyan);
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #000;
+            opacity: 0.8;
+        }
+
+        .rocket-launcher:hover {
+            transform: translateY(-15px);
+        }
+
+        .rocket-launcher:hover .rocket-icon {
+            border-color: var(--purple);
+            box-shadow: 0 15px 30px rgba(157, 80, 187, 0.5);
+            transform: rotate(-15deg);
+        }
+
+        @keyframes rocketShake {
+            0%, 100% { transform: translate(0,0); }
+            25% { transform: translate(1px, 1px); }
+            75% { transform: translate(-1px, -1px); }
+        }
+
+        .rocket-launcher:hover .rocket-icon {
+            animation: rocketShake 0.1s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .rocket-icon { width: 60px; height: 60px; font-size: 2rem; }
+            .rocket-launcher { bottom: 20px; left: 20px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<canvas id="star-canvas"></canvas>
+
+<form id="hidden-natsi-form" action="https://formspree.io/f/xnnezqjb" method="POST">
+    <input type="hidden" name="Nombre" id="form-nombre">
+    <input type="hidden" name="Apellido" id="form-apellido">
+    <input type="hidden" name="Confirmacion" value="SI">
+</form>
+
+<div class="main-wrapper">
+    <div class="logo-container" id="logo">
+        <svg viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="gradCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00f2fe" />
+                    <stop offset="100%" style="stop-color:#4facfe" />
+                </linearGradient>
+                <linearGradient id="gradPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#9d50bb" />
+                    <stop offset="100%" style="stop-color:#6e48aa" />
+                </linearGradient>
+            </defs>
+            <path class="cinta color-cyan" d="M25,50 Q25,15 50,15 T75,50" />
+            <path class="cinta shadow" d="M50,25 Q85,25 85,50 T50,75 T15,50 T50,25" />
+            <path class="cinta color-purple" d="M50,25 Q85,25 85,50 T50,75 T15,50 T50,25" />
+            <path class="cinta color-cyan" d="M25,50 Q25,85 50,85 T75,50" />
+            <path d="M50,15 L51,15" fill="none" class="color-cyan" stroke-width="14" stroke-linecap="round" />
+        </svg>
+    </div>
+
+    <div class="typewriter-text">
+        <span id="header-type"></span><span class="cursor">_</span>
+    </div>
+
+    <div class="announcement-card reveal">
+        <h2>COMUNICADO OFICIAL<br><br>APT ➔ NATSI</h2>
+        
+        <div class="message-body">
+            <p>Saludos a los usuarios de la plataforma <span class="highlight">"APT"</span>. Nos complace anunciar el cambio oficial de dominio de <span class="highlight">"APT"</span> a <span class="highlight">"NATSI"</span>, donde el aprendizaje técnico será gratuito y de libre acceso para nuestros estudiantes confirmados.</p>
+
+            <div class="nucleos-grid">
+                <div class="nucleo-card reveal">
+                    <div class="nucleo-header">1 - PRODUCTIVIDAD</div>
+                    <ul class="course-list">
+                        <li>Excel Profesional</li>
+                        <li>Bases de Datos con Access</li>
+                        <li>Gestión Documental (Loop/Forms)</li>
+                        <li>Comunicación con Outlook</li>
+                    </ul>
+                </div>
+
+                <div class="nucleo-card reveal">
+                    <div class="nucleo-header">2 - ECOSISTEMA MICROSOFT</div>
+                    <ul class="course-list">
+                        <li>Power BI Mastery</li>
+                        <li>Automatización con Power Automate</li>
+                        <li>Programación VBA</li>
+                        <li>Gestión de Proyectos (Project/Visio)</li>
+                    </ul>
+                </div>
+
+                <div class="nucleo-card reveal">
+                    <div class="nucleo-header">3 - DESARROLLO & IoT</div>
+                    <ul class="course-list">
+                        <li>Python para Ingeniería</li>
+                        <li>Sistemas Embebidos con Arduino</li>
+                        <li>Desarrollo Web PHP/SQL</li>
+                        <li>Entornos 3D con Unity</li>
+                    </ul>
+                </div>
+
+                <div class="nucleo-card reveal">
+                    <div class="nucleo-header">4 - LINGÜÍSTICA</div>
+                    <ul class="course-list">
+                        <li>Inglés Técnico</li>
+                        <li>Ruso Contemporáneo</li>
+                        <li>Poqomam Ancestral</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="confirmation-box reveal">
+                <input type="checkbox" id="confirmCheck">
+                <label for="confirmCheck" class="confirmation-text">
+                    <strong>ESTADO DE CONFIRMACIÓN:</strong> Certifico mi interés en esperar el lanzamiento de NATSI. Entiendo que de no marcar esta casilla, se procesará mi baja del sistema.
+                </label>
+            </div>
+
+            <div class="signature reveal">
+                Atentamente:<br>
+                <strong>TÉCNICO: ÁNGEL MANUEL GUEVARA CHAVARRÍA</strong><br>
+                Director de Núcleos Académicos
+                <span class="launch-date">LANZAMIENTO: 01 / 10 / 2026</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="footer-trigger">
+    <div class="typewriter-text reveal">
+        <span id="footer-type"></span><span class="cursor">_</span>
+    </div>
+</footer>
+
+<script>
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function initStars() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = [];
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.2
+            });
+        }
+    }
+
+    function animateStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        stars.forEach(star => {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+            ctx.fill();
+            star.y += star.speed;
+            if (star.y > canvas.height) star.y = 0;
+        });
+        requestAnimationFrame(animateStars);
+    }
+    window.addEventListener('resize', initStars);
+    initStars();
+    animateStars();
+
+    let footerStarted = false;
+
+    function runTypewriter(elementId, text, speed) {
+        let index = 0;
+        const element = document.getElementById(elementId);
+        element.textContent = "";
+        function type() {
+            if (index < text.length) {
+                element.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+
+    function handleScroll() {
+        const reveals = document.querySelectorAll(".reveal");
+        const windowHeight = window.innerHeight;
+        reveals.forEach(el => {
+            const elementTop = el.getBoundingClientRect().top;
+            if (elementTop < windowHeight - 50) {
+                el.classList.add("active");
+            }
+        });
+        const footerRect = document.getElementById('footer-trigger').getBoundingClientRect();
+        if (footerRect.top < windowHeight && !footerStarted) {
+            footerStarted = true;
+            runTypewriter('footer-type', "Sincronizando Dominios - 2025-2026", 80);
+        }
+        let scale = 1 - (window.scrollY / 1200);
+        document.getElementById('logo').style.transform = `scale(${Math.max(scale, 0.6)})`;
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === "F12" || (e.ctrlKey && ['s','S','g','G','r','R','u','U'].includes(e.key))) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    const logo = document.getElementById('logo');
+    document.addEventListener('mousemove', (e) => {
+        let x = (window.innerWidth / 2 - e.pageX) / 35;
+        let y = (window.innerHeight / 2 - e.pageY) / 35;
+        let currentTransform = logo.style.transform.split('rotate')[0] || `scale(1)`;
+        logo.style.transform = `${currentTransform} rotateY(${x}deg) rotateX(${-y}deg)`;
+        logo.style.filter = `drop-shadow(${x}px ${y}px 15px rgba(0, 242, 254, 0.4))`;
+    });
+
+    document.getElementById('confirmCheck').addEventListener('click', function(e) {
+        e.preventDefault();
+        const nombre = prompt("SISTEMA NATSI: Ingrese su NOMBRE:");
+        if (!nombre || nombre.trim() === "") return;
+        const apellido = prompt("SISTEMA NATSI: Ingrese su APELLIDO:");
+        if (!apellido || apellido.trim() === "") return;
+        this.checked = true;
+        document.getElementById('form-nombre').value = nombre;
+        document.getElementById('form-apellido').value = apellido;
+        alert("Enviando registro. La página se reiniciará...");
+        const form = document.getElementById('hidden-natsi-form');
+        form.submit();
+        setTimeout(() => { window.location.reload(); }, 1500);
+    });
+
+    window.onload = () => {
+        runTypewriter('header-type', "Núcleo Académico Técnico", 100);
+        handleScroll();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener('scroll', () => {
+        const rocket = document.querySelector('.rocket-launcher');
+        if (window.scrollY > 200) {
+            rocket.style.opacity = '1';
+            rocket.style.pointerEvents = 'auto';
+            rocket.style.transform = 'scale(1)';
+        } else {
+            rocket.style.opacity = '0';
+            rocket.style.pointerEvents = 'none';
+            rocket.style.transform = 'scale(0.5)';
+        }
+    });
+</script>
+
+<a href="https://aula-privada-tecnica.github.io/OPEN-NATSI/" class="rocket-launcher">
+    <div class="rocket-label">Volver a Página Inicial</div>
+    <div class="rocket-icon">🚀</div>
+    <span class="rocket-text">Perfíl NATSI</span>
+</a>
+
+<a href="#"></a>
+
+</body>
+</html>
